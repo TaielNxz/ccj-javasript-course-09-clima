@@ -71,6 +71,8 @@ function consultarAPI( ciudad, pais ) {
     fetch(url)
         .then( respuesta => respuesta.json() )
         .then( datos => {
+            // Limpiar el HTML previo
+            limpiarHTML(); 
 
             if( datos.cod === "404") {
                 mostrarError('Ciudad no encontrada');
@@ -84,5 +86,51 @@ function consultarAPI( ciudad, pais ) {
 
 
 function mostrarClima( datos ) {
-    console.log(datos)
+    const { name, main: { temp, temp_max, temp_min } } = datos;
+
+    const centigrados = kelvinACentigrados(temp);
+    const max = kelvinACentigrados(temp_max);
+    const min = kelvinACentigrados(temp_min);
+
+    // Parrafo con Nombre de la Ciudad
+    const nombreCiudad = document.createElement('p');
+    nombreCiudad.textContent = `Clima en ${ name }`;
+    nombreCiudad.classList.add('font-bold', 'text-2xl');
+
+    // Parrafo con Temperatura Actual
+    const actual = document.createElement('p');
+    actual.innerHTML = `${ centigrados } &#8451;`;
+    actual.classList.add('font-bold', 'text-6xl');
+
+    // Parrafo con Temperatura Maxima
+    const tempMaxima = document.createElement('p');
+    tempMaxima.innerHTML = `Max: ${ max } &#8451;`;
+    tempMaxima.classList.add('text-xl');
+
+    // Parrafo con Temperatura Minima
+    const tempMinima = document.createElement('p');
+    tempMinima.innerHTML = `Min: ${ min } &#8451;`;
+    tempMinima.classList.add('text-xl');
+
+    // Crear div para los parrafos
+    const resultadoDiv = document.createElement('div');
+    resultadoDiv.classList.add('text-center', 'text-white');
+
+    // Agregamos los parrafos
+    resultadoDiv.appendChild(nombreCiudad);
+    resultadoDiv.appendChild(actual);
+    resultadoDiv.appendChild(tempMaxima);
+    resultadoDiv.appendChild(tempMinima);
+
+    // Imprimir el div
+    resultado.appendChild(resultadoDiv);
+};
+
+// Pasar los numeros a Centigrados
+const kelvinACentigrados = grados => parseInt( grados - 273.15 );
+
+function limpiarHTML() {
+    while(resultado.firstChild) {
+        resultado.removeChild(resultado.firstChild);
+    };
 };
